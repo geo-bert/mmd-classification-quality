@@ -111,19 +111,16 @@ def _get_nearest_group(k_grouped_euclids: list[list[float]]) -> int:
 
 def _update_smallest_group_index(group_indizes: list[int], k_grouped_euclids: list[list[float]]):
   curr_smallest_per_group = []
-  next_val_per_group = []
   for i, curr_smallest in enumerate(group_indizes):
-    curr_smallest_per_group.append(k_grouped_euclids[i][curr_smallest])
-    next_index = curr_smallest + 1
-    if next_index < len(k_grouped_euclids[i]):
-      next_val_per_group.append(k_grouped_euclids[i][next_index])
-    else:
+    if curr_smallest >= len(k_grouped_euclids[i]):
       # smallest already found
       return
 
+    curr_smallest_per_group.append(k_grouped_euclids[i][curr_smallest])
+
   index = 0
-  for i in range(len(next_val_per_group)):
-    if next_val_per_group[i] < next_val_per_group[index]:
+  for i in range(len(curr_smallest_per_group)):
+    if curr_smallest_per_group[i] < curr_smallest_per_group[index]:
       index = i
 
   group_indizes[index] += 1
@@ -201,13 +198,14 @@ def _get_euclidean_distance(left_vector: FeatureVector, right_vector: FeatureVec
 
 def main():
   groups = []
-  for i in range(6):
+  for i in range(0, 6, 2):
     features = {}
     features["vec1"] = FeatureVector([(np.array([i]), (1,1,1))])
     features["vec2"] = FeatureVector([(np.array([i]), (1,1,1))])
+    features["vec3"] = FeatureVector([(np.array([i+1]), (1,1,1))])
     groups.append(features)
 
-  run_classification(groups, k=1)
+  run_classification(groups, k=2)
 
 
 if __name__ == '__main__':
