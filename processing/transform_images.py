@@ -1,4 +1,7 @@
 import os
+
+import matlab.engine
+
 import binary_search as bs
 import compress
 import quality_metrics as qm
@@ -18,7 +21,8 @@ TARGET_NIQE = 5
 
 
 def main():
-    input_images = os.listdir(INPUT_IMAGES)[:5]
+    input_images = os.listdir(INPUT_IMAGES)
+    problematic = set()
 
     # PSNR
     outpath = "../images/output/psnr"
@@ -26,8 +30,13 @@ def main():
         in_img = os.path.join(INPUT_IMAGES, img)
         for name, fn in COMPRESSIONS:
             out_path = os.path.join(outpath, name)
-            bs.search_fr(in_img, TARGET_PSNR, fn, qm.psnr, out_path)
+            try:
+                bs.search_fr(in_img, TARGET_PSNR, fn, qm.psnr, out_path)
+            except matlab.engine.MatlabExecutionError:
+                problematic.add(in_img)
+                print(f"Could not convert {in_img}")
 
+    print(problematic)
     # ms-ssim
     # TODO
 

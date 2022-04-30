@@ -1,6 +1,6 @@
 def search_fr(orig_img, wanted_quality, compression_func, quality_func, out_dir):
     low = 0
-    high = 99
+    high = 100
     mid = 0
     best_estimate = (-1, float('inf'))
 
