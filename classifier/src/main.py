@@ -1,9 +1,9 @@
 import os
 
 from classification import run_classification
+from config_generator import generate_configs
 from feature_config import FeatureConfig
 from setup import get_feature_vectors
-from config_generator import generate_configs
 
 KNN_K = 1
 

@@ -19,7 +19,7 @@ def _apply_dct(block: ndarray, coefficients: list[tuple[int, int]]) -> list[floa
     dct = np.multiply(cv2.dct(np.divide(block, 256)), 256)
     for (x, y) in coefficients:
         result.append(dct[x][y])
-    
+
     return result
 
 
@@ -129,7 +129,7 @@ class FeatureExtractor:
 
 
 def main(img: str):
-    fc = FeatureConfig(ChannelYUV.U, 8, 1, [(0, 0), (3,2)])
+    fc = FeatureConfig(ChannelYUV.U, 8, 1, [(0, 0), (3, 2)])
     fe = FeatureExtractor(fc)
     cProfile.runctx("hallo(img)", locals={"hallo": fe.extract_feature_vector, "img": img, "fe": fe}, globals={},
                     sort="tottime")

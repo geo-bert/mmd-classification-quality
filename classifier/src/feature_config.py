@@ -100,9 +100,10 @@ def _coefficient_to_string(coefficient: tuple[int, int]) -> str:
     coeff = coefficient
     return f"({coeff[0]}_{coeff[1]})"
 
+
 def _coefficients_to_string(coefficients: list[tuple[int, int]]) -> str:
     s: str = ""
     for coeff in coefficients:
-      s += _coefficient_to_string(coeff)
+        s += _coefficient_to_string(coeff)
 
     return s
