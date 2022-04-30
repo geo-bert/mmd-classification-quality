@@ -1,13 +1,12 @@
-def binary_search(arr_q_steps, orig_img, wanted_quality, compression_func, quality_func, out_dir):
+def search_fr(orig_img, wanted_quality, compression_func, quality_func, out_dir):
     low = 0
-    high = len(arr_q_steps) - 1
+    high = 99
     mid = 0
     best_estimate = (-1, float('inf'))
 
     def calc_new_quality():
         new_image = compression_func(orig_img, out_dir, mid)
         new_quality = quality_func(new_image, orig_img)
-        print(f"calculated {new_quality} with quality option: {mid}")
         return new_quality
 
     while low <= high:
@@ -28,4 +27,5 @@ def binary_search(arr_q_steps, orig_img, wanted_quality, compression_func, quali
             best_estimate = (curr_q, mid)
 
             # return best estimate here because we will not find the quality spot on (not likely)
+    print(f"{orig_img} -> {out_dir}: Metric={best_estimate} Quality={mid}")
     return best_estimate
