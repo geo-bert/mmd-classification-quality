@@ -18,7 +18,8 @@ def run_experiment(paths: list[str], result_file: str):
 
 
 def _store_results(config: FeatureConfig, result: float, file: str):
-    line = f"{result},{config.block_size},{config.color_channel},{config.bin_width},{config.dct_coefficients}\n"
+    coeffs = "".join(f"({coeff[0]}|{coeff[1]})" for coeff in config.dct_coefficients)
+    line = f"{result:1.4f},{config.block_size},{config.color_channel},{config.bin_width},[{coeffs}]\n"
 
     if os.path.exists(file):
         with open(file, "a") as f:
