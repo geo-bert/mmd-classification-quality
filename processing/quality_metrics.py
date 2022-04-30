@@ -24,7 +24,7 @@ def mssim(image_path: str, original_path: str) -> float:
     else:
         vgl = eng.imread(original_path)
         memo[original_path] = vgl
-    return eng.multissim(vgl, ref)
+    return sum(eng.multissim(vgl, ref)[0][0]) / 3
 
 
 def niqe(image_path: str) -> float:

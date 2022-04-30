@@ -16,9 +16,9 @@ def single_compression_webp(image: str, out_dir: str, quality: float) -> str:
     return image_out
 
 
-def single_compression_xr(image: str, out_dir: str, quality: float) -> str:
+def single_compression_xr(image: str, out_dir: str, quality: int) -> str:
     image_out = create_out_image_path(image, out_dir, "jxr")
-    os.system(f"{cli_config.JxrEncApp} -q {quality} -i {image} -o {image_out}")
+    os.system(f"{cli_config.JxrEncApp} -q {quality/100} -i {image} -o {image_out}")
     return image_out
 
 
