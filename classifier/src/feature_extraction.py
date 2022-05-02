@@ -15,12 +15,8 @@ from feature_vector import FeatureVector
 
 
 def _apply_dct(block: ndarray, coefficients: list[tuple[int, int]]) -> list[float]:
-    result = []
     dct = np.multiply(cv2.dct(np.divide(block, 256)), 256)
-    for (x, y) in coefficients:
-        result.append(dct[x][y])
-
-    return result
+    return [dct[x][y] for (x, y) in coefficients]
 
 
 def _round_nearest(x, a):
@@ -103,29 +99,25 @@ class FeatureExtractor:
         return image[i * self._block_size:(i + 1) * self._block_size, j * self._block_size:(j + 1) * self._block_size]
 
     def _create_feature(self, image: ndarray, path: str) -> FeatureVector:
-        results = []
-        for _ in range(len(self._dct_coefficients)):
-            results.append([])
+        results = [[] for _ in (range(len(self._dct_coefficients)))]
 
         for x in range(image.shape[0] // self._block_size):
             for y in range(image.shape[1] // self._block_size):
-                cur_slice: ndarray = self._get_slice(image, x, y)
+                cur_slice = self._get_slice(image, x, y)
                 dct_coeffs = _apply_dct(cur_slice, self._dct_coefficients)
                 for i in range(len(dct_coeffs)):
                     results[i].append(dct_coeffs[i])
 
-        hists = []
-        for result in results:
-            hists.append(self._histoize(np.array(result)))
+        hists = [self._histoize(result) for result in results]
 
         return FeatureVector(hists, path)
 
-    def _histoize(self, values: ndarray) -> tuple[ndarray, tuple[float, float, float]]:
+    def _histoize(self, values) -> tuple[ndarray, tuple[float, float, float]]:
         bin_min = _round_nearest(min(values), self._bin_width) - self._bin_width
         bin_max = _round_nearest(max(values), self._bin_width) + 2 * self._bin_width
         hist, bins = numpy.histogram(values, bins=numpy.arange(bin_min, bin_max, self._bin_width))
         return hist, \
-            (_round_nearest(bins[0], self._bin_width), _round_nearest(bins[-1], self._bin_width), self._bin_width)
+               (_round_nearest(bins[0], self._bin_width), _round_nearest(bins[-1], self._bin_width), self._bin_width)
 
 
 def main(img: str):
@@ -142,6 +134,6 @@ def main(img: str):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        main("example_images/decompressed/Buildings.001_jp2.png")
+        main("../../images/output/psnr/heic/context1.heic.png")
     else:
         main(sys.argv[1])

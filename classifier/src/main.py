@@ -1,4 +1,5 @@
 import os
+import cProfile
 
 from classification import run_classification
 from config_generator import generate_configs
@@ -47,4 +48,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    cProfile.runctx('main()', globals={'main': main}, locals={}, sort="tottime")
+    # main()
