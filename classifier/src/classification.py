@@ -180,17 +180,17 @@ def _get_euclidean_distance(left_vector: FeatureVector, right_vector: FeatureVec
         if left_bin != right_bin:
             raise ValueError("Can't use different bin widths")
 
-        if left_min < right_min:
-            right_arr = np.concatenate([np.zeros(int(round(abs(left_min - right_min) / left_bin))), right_arr])
-        elif right_min < left_min:
-            left_arr = np.concatenate([np.zeros(int(round(abs(left_min - right_min) / left_bin))), left_arr])
+        llp, lrp = (round(abs(left_min - right_min) / left_bin) if left_min > right_min else 0,
+                    round(abs(left_max - right_max) / left_bin) if left_max < right_max else 0)
+        rlp, rrp = (round(abs(left_min - right_min) / left_bin) if left_min < right_min else 0,
+                    round(abs(left_max - right_max) / left_bin) if left_max > right_max else 0)
 
-        if left_max < right_max:
-            left_arr = np.concatenate([left_arr, np.zeros(int(round(abs(left_max - right_max) / left_bin)))])
-        elif right_max < left_max:
-            right_arr = np.concatenate([right_arr, np.zeros(int(round(abs(left_max - right_max) / left_bin)))])
+        inter_l = np.zeros(llp + lrp + left_arr.size)
+        inter_r = np.zeros(rlp + rrp + right_arr.size)
+        inter_l[llp:llp + left_arr.size] = left_arr
+        inter_r[rlp:rlp + right_arr.size] = right_arr
 
-        euclid += np.linalg.norm(left_arr - right_arr)
+        euclid += np.linalg.norm(inter_l - inter_r)
     return euclid
 
 
