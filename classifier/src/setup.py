@@ -8,13 +8,10 @@ from feature_vector import FeatureVector
 from progress import ProgressBar
 
 
-def get_feature_vectors(paths: list[str], feature_config: FeatureConfig) -> list[dict[str, FeatureVector]]:
+def get_feature_vectors(path: str, feature_config: FeatureConfig) -> dict[str, FeatureVector]:
     feature_extractor = FeatureExtractor(feature_config)
-    features = []
-    for path in paths:
-        features.append(_get_feature_vectors_of_path(path, feature_extractor))
 
-    return features
+    return _get_feature_vectors_of_path(path, feature_extractor)
 
 
 def _get_feature_vectors_of_path(path: str, feature_extractor: FeatureExtractor) -> dict[str, FeatureVector]:

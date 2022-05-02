@@ -1,5 +1,7 @@
 import os
 import cProfile
+from multiprocessing import Pool
+from itertools import repeat
 
 from classification import run_classification
 from config_generator import generate_configs
@@ -13,7 +15,8 @@ def run_experiment(paths: list[str], result_file: str):
     configs = generate_configs()
     print(f"Starting experiment for {len(configs)} configurations")
     for config in configs:
-        feat_vecs = get_feature_vectors(paths, config)
+        with Pool(8) as p:
+            feat_vecs = p.starmap(get_feature_vectors, zip(paths, repeat(config)))
         total_accuracy = run_classification(feat_vecs, KNN_K)
         _store_results(config, total_accuracy, result_file)
 

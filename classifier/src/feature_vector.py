@@ -1,5 +1,4 @@
-import numpy
-from numpy import ndarray
+from numpy import ndarray, array
 
 
 class FeatureVector:
@@ -28,7 +27,7 @@ class FeatureVector:
 
     @histograms.setter
     def histograms(self, new_value: list[tuple[list[float], tuple[float, float, float]]]) -> None:
-        self._histograms = numpy.array(new_value)
+        self._histograms = array(new_value)
 
     @histograms.deleter
     def histograms(self) -> None:

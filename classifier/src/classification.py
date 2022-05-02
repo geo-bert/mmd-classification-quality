@@ -1,4 +1,8 @@
-import numpy as np
+from itertools import repeat
+from multiprocessing import Pool
+
+from numpy import zeros
+from numpy.linalg import norm
 
 from feature_vector import FeatureVector
 from progress import ProgressBar
@@ -21,9 +25,9 @@ def run_classification(grouped_features: list[dict[str, FeatureVector]], k: int)
     print("Classifying vectors...")
     print()
 
-    correct_cnt = []
-    for group_index in range(len(grouped_features)):
-        correct_cnt.append(_count_correct_classification(group_index, grouped_features, k))
+    with Pool(8) as p:
+        correct_cnt = p.starmap(_count_correct_classification,
+                                zip(range(len(grouped_features)), repeat(grouped_features), repeat(k)))
 
     print()
     print("Finished classification. Results:")
@@ -185,12 +189,12 @@ def _get_euclidean_distance(left_vector: FeatureVector, right_vector: FeatureVec
         rlp, rrp = (round(abs(left_min - right_min) / left_bin) if left_min < right_min else 0,
                     round(abs(left_max - right_max) / left_bin) if left_max > right_max else 0)
 
-        inter_l = np.zeros(llp + lrp + left_arr.size)
-        inter_r = np.zeros(rlp + rrp + right_arr.size)
+        inter_l = zeros(llp + lrp + left_arr.size)
+        inter_r = zeros(rlp + rrp + right_arr.size)
         inter_l[llp:llp + left_arr.size] = left_arr
         inter_r[rlp:rlp + right_arr.size] = right_arr
 
-        euclid += np.linalg.norm(inter_l - inter_r)
+        euclid += norm(inter_l - inter_r)
     return euclid
 
 
@@ -198,9 +202,9 @@ def main():
     groups = []
     for i in range(0, 6, 2):
         features = {}
-        features["vec1"] = FeatureVector([(np.array([i]), (1, 1, 1))])
-        features["vec2"] = FeatureVector([(np.array([i]), (1, 1, 1))])
-        features["vec3"] = FeatureVector([(np.array([i + 1]), (1, 1, 1))])
+        # features["vec1"] = FeatureVector([(np.array([i]), (1, 1, 1))])
+        # features["vec2"] = FeatureVector([(np.array([i]), (1, 1, 1))])
+        # features["vec3"] = FeatureVector([(np.array([i + 1]), (1, 1, 1))])
         groups.append(features)
 
     run_classification(groups, k=2)
