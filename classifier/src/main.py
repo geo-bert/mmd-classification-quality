@@ -3,7 +3,10 @@ import cProfile
 from multiprocessing import Pool
 from itertools import repeat
 
+from numpy import block
+
 from classification import run_classification
+from channel_enum import ChannelYUV
 from config_generator import generate_configs
 from feature_config import FeatureConfig
 from setup import get_feature_vectors
@@ -15,10 +18,14 @@ def run_experiment(paths: list[str], result_file: str):
     configs = generate_configs()
     print(f"Starting experiment for {len(configs)} configurations")
     for config in configs:
-        with Pool(8) as p:
-            feat_vecs = p.starmap(get_feature_vectors, zip(paths, repeat(config)))
-        total_accuracy = run_classification(feat_vecs, KNN_K)
-        _store_results(config, total_accuracy, result_file)
+        run_specific_experiment(paths, result_file, config)
+
+
+def run_specific_experiment(paths: list[str], result_file: str, config: FeatureConfig):
+    with Pool(8) as p:
+        feat_vecs = p.starmap(get_feature_vectors, zip(paths, repeat(config)))
+    total_accuracy = run_classification(feat_vecs, KNN_K)
+    _store_results(config, total_accuracy, result_file)
 
 
 def _store_results(config: FeatureConfig, result: float, file: str):
@@ -47,9 +54,15 @@ def main():
         os.path.join(base_path, "webp")
 
     ]
-    run_experiment(paths, "experiment_results.csv")
+    # run_experiment(paths, "experiment_results.csv")
+    config = FeatureConfig(color_channel=ChannelYUV.V, block_size=6, bin_width=0.1, dct_coefficients=[
+        
+        (1,1),(1,3),(1,5),
+        (4,5),(5,0)
+    ])
+    run_specific_experiment(paths, "experiment_results_psnr35_single.csv", config)
 
 
 if __name__ == '__main__':
-    cProfile.runctx('main()', globals={'main': main}, locals={}, sort="tottime")
-    # main()
+    # cProfile.runctx('main()', globals={'main': main}, locals={}, sort="tottime")
+    main()
