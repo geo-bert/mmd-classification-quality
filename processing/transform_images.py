@@ -60,7 +60,7 @@ def main():
                 print(f"Could not convert {in_img}")
 
     # niqe
-    outpath = f"../images/output/nique_{TARGET_NIQE}"
+    outpath = f"../images/output/niqe_{TARGET_NIQE}"
     for img in input_images:
         in_img = os.path.join(INPUT_IMAGES, img)
         for name, fn in COMPRESSIONS:
