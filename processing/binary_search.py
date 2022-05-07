@@ -34,8 +34,8 @@ def search_fr(orig_img, wanted_quality, compression_func, quality_func, out_dir,
             # we need to approach quality from above and set new best estimate if
             if curr_q > wanted_quality and (curr_q - wanted_quality) < (best_estimate[0] - wanted_quality):
                 best_estimate = (curr_q, mid)
-
-        print(f"Best: {best_estimate}, curr_q: {curr_q}, mid: {mid}")
-            # return best estimate here because we will not find the quality spot on (not likely)
+          
     print(f"{orig_img} -> {out_dir}: Metric={best_estimate} Quality={mid}")
+    #compress image one last time
+    compression_func(orig_img, out_dir, best_estimate[1])
     return best_estimate
