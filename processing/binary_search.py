@@ -1,41 +1,42 @@
-def search_fr(orig_img, wanted_quality, compression_func, quality_func, out_dir, from_below = True):
-    low = 0
-    high = 100
-    mid = 0
-    best_estimate = (-1, float('inf'))
-    
-    #when approaching from above the intial best estimates needs to be infinite for the calculation below
-    if not from_below:
-        best_estimate = (float('inf'),float('inf'))
-        
-    def calc_new_quality():
-        new_image = compression_func(orig_img, out_dir, mid)
-        new_quality = quality_func(new_image, orig_img)
-        return new_quality
+import math
+import os
 
-    while low <= high:
-        
+
+def search(img_in, target, fn_compress, fn_quality, out, from_below=True):
+    quality_flag = -1
+    metric = -1 if from_below else math.inf
+
+    def binary_search(low, high):
+        nonlocal metric
+        nonlocal quality_flag
+
+        if high < low:
+            return
+
         mid = (high + low) // 2
+        q = calc_new_quality(mid)
 
-        curr_q = calc_new_quality()
+        if from_below and metric < q < target:
+            metric = q
+            quality_flag = mid
+        elif not from_below and metric > q > target:
+            metric = q
+            quality_flag = mid
 
-        if curr_q < wanted_quality:
-            low = mid + 1
-        elif curr_q > wanted_quality:
-            high = mid - 1
+        if q < target:
+            binary_search(mid + 1, high)
+        elif q > target:
+            binary_search(low, mid - 1)
         else:
-            return curr_q, mid
+            metric = q
+            quality_flag = mid
 
-        if from_below:
-            # we need to approach quality from below and set new best estimate if
-            if curr_q < wanted_quality and (wanted_quality - curr_q) < (wanted_quality - best_estimate[0]):
-                best_estimate = (curr_q, mid)
-        else:
-            # we need to approach quality from above and set new best estimate if
-            if curr_q > wanted_quality and (curr_q - wanted_quality) < (best_estimate[0] - wanted_quality):
-                best_estimate = (curr_q, mid)
-          
-    print(f"{orig_img} -> {out_dir}: Metric={best_estimate} Quality={mid}")
-    #compress image one last time
-    compression_func(orig_img, out_dir, best_estimate[1])
-    return best_estimate
+    def calc_new_quality(x):
+        img = fn_compress(img_in, out, x)
+        return fn_quality(img, img_in)
+
+    binary_search(0, 100)
+
+    print(f"{img_in.split(os.sep)[-1]} -> {out.split(os.sep)[-1]}: Metric={metric} Quality={quality_flag}")
+    fn_compress(img_in, out, quality_flag)
+    return quality_flag
