@@ -1,12 +1,12 @@
 import os
+import sys
+
+import compress
+import quality_metrics as qm
+import binary_search as bs
 
 import matlab.engine
 
-import binary_search as bs
-import compress
-import quality_metrics as qm
-
-INPUT_IMAGES = "../images/input"
 COMPRESSIONS = [
     ("heic", compress.heic),
     ("jp2", compress.jp2),
@@ -15,63 +15,55 @@ COMPRESSIONS = [
     ("jxr", compress.jxr),
     ("webp", compress.webp)
 ]
-TARGET_PSNR = 25
-TARGET_SSIM = 0.9
-TARGET_NIQE = 5
+
+METRICS = {
+        "psnr": qm.psnr,
+        "mssim_avg": qm.mssim_avg,
+        "mssim_bv": qm.mssim_bv,
+        "niqe": qm.niqe
+}
 
 
-def main():
-    input_images = os.listdir(INPUT_IMAGES)
+def main(args):
+    _, compression, target, folder = args
+    target = float(target)
+    folder = os.path.abspath(folder)
+
+    if compression not in METRICS:
+        print(f"Invalid compression type: {compression}")
+        exit(1)
+
+    input_images = os.listdir(folder)
     problematic = set()
 
-    # PSNR
-    outpath = f"../images/output/psnr_{TARGET_PSNR}"
+    outpath = os.path.join("/", *os.path.abspath(folder).split(os.sep)[:-1], "output", f"{compression}_{target}")
+    print(outpath)
+
+    os.system(f"rm -r {outpath}")
+    os.system(f"mkdir {outpath}")
+    os.system(f"mkdir {os.path.join(outpath, 'heic')}")
+    os.system(f"mkdir {os.path.join(outpath, 'jpg')}")
+    os.system(f"mkdir {os.path.join(outpath, 'jxl')}")
+    os.system(f"mkdir {os.path.join(outpath, 'jxr')}")
+    os.system(f"mkdir {os.path.join(outpath, 'jp2')}")
+    os.system(f"mkdir {os.path.join(outpath, 'webp')}")
+
     for img in input_images:
-        in_img = os.path.join(INPUT_IMAGES, img)
+        in_img = os.path.join(folder, img)
         for name, fn in COMPRESSIONS:
             out_path = os.path.join(outpath, name)
             try:
-                bs.search_fr(in_img, TARGET_PSNR, fn, qm.psnr, out_path)
+                bs.search_fr(in_img, target, fn, METRICS[compression], out_path, compression != "niqe")
             except matlab.engine.MatlabExecutionError:
                 problematic.add(in_img)
                 print(f"Could not convert {in_img}")
+            except KeyboardInterrupt:
+                print(problematic)
+                exit(2)
 
-    # ms-ssim, 2 options: avg or best value
-    outpath = f"../images/output/ssim_avg_{TARGET_SSIM}"
-    for img in input_images:
-        in_img = os.path.join(INPUT_IMAGES, img)
-        for name, fn in COMPRESSIONS:
-            out_path = os.path.join(outpath, name)
-            try:
-                bs.search_fr(in_img, TARGET_SSIM, fn, qm.mssim_avg, out_path)
-            except matlab.engine.MatlabExecutionError:
-                problematic.add(in_img)
-                print(f"Could not convert {in_img}")
-
-    outpath = f"../images/output/ssim_bv_{TARGET_SSIM}"
-    for img in input_images:
-        in_img = os.path.join(INPUT_IMAGES, img)
-        for name, fn in COMPRESSIONS:
-            out_path = os.path.join(outpath, name)
-            try:
-                bs.search_fr(in_img, TARGET_SSIM, fn, qm.mssim_bv, out_path)
-            except matlab.engine.MatlabExecutionError:
-                problematic.add(in_img)
-                print(f"Could not convert {in_img}")
-
-    # niqe
-    outpath = f"../images/output/niqe_{TARGET_NIQE}"
-    for img in input_images:
-        in_img = os.path.join(INPUT_IMAGES, img)
-        for name, fn in COMPRESSIONS:
-            out_path = os.path.join(outpath, name)
-            try:
-                bs.search_fr(in_img, TARGET_SSIM, fn, qm.niqe, out_path,False) #False flag to toggle approximation from above
-            except matlab.engine.MatlabExecutionError:
-                problematic.add(in_img)
-                print(f"Could not convert {in_img}")
-
-    print(problematic)
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) != 4:
+        print("transform_images.py <compression> <target-value> <input-folder>")
+        exit(1)
+    main(sys.argv)
