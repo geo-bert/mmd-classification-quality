@@ -37,7 +37,6 @@ def main(args):
     problematic = set()
 
     outpath = os.path.join("/", *os.path.abspath(folder).split(os.sep)[:-1], "output", f"{compression}_{target}")
-    print(outpath)
 
     os.system(f"rm -r {outpath}")
     os.system(f"mkdir {outpath}")
@@ -53,13 +52,10 @@ def main(args):
         for name, fn in COMPRESSIONS:
             out_path = os.path.join(outpath, name)
             try:
-                bs.search_fr(in_img, target, fn, METRICS[compression], out_path, compression != "niqe")
+                bs.search(in_img, target, fn, METRICS[compression], out_path, compression != "niqe")
             except matlab.engine.MatlabExecutionError:
                 problematic.add(in_img)
                 print(f"Could not convert {in_img}")
-            except KeyboardInterrupt:
-                print(problematic)
-                exit(2)
 
 
 if __name__ == "__main__":
