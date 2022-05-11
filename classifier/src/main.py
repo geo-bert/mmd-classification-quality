@@ -44,7 +44,7 @@ def _store_results(config: FeatureConfig, result: float, file: str):
 
 
 def main():
-    base_path = "images/output/niqe_6.0"
+    base_path = "images/output/psnr_30"
     paths = [
         os.path.join(base_path, "heic"),
         os.path.join(base_path, "jp2"),
@@ -54,13 +54,13 @@ def main():
         os.path.join(base_path, "webp")
 
     ]
-    run_experiment(paths, "experiment_results_niqe_6.csv")
+    run_experiment(paths, "experiment_results_psnr30.csv")
 
     config = FeatureConfig(color_channel=ChannelYUV.V, block_size=6, bin_width=0.1, dct_coefficients=[
         (1,1),(1,3),(1,5),
         (4,5),(5,0)
     ])
-    run_specific_experiment(paths, "experiment_results_niqe_6_single.csv", config)
+    run_specific_experiment(paths, "experiment_results_psnr30_single.csv", config)
 
 
 if __name__ == '__main__':

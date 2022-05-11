@@ -6,3 +6,4 @@ total_result,block_size,color_channel,bin_width,coefficients
 0.7968,6,ChannelYUV.V,0.1,[(1|1)(1|3)(1|5)(4|5)(5|0)(5|5)(5|4)]
 0.8114,6,ChannelYUV.V,0.1,[(1|1)(1|3)(1|5)(4|5)(5|0)(5|5)]
 0.8004,6,ChannelYUV.V,0.1,[(1|1)(1|3)(1|5)(4|5)(5|0)(5|4)]
+0.8114,6,ChannelYUV.V,0.1,[(1|1)(1|3)(1|5)(4|5)(5|0)]
