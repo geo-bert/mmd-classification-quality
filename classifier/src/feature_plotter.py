@@ -1,5 +1,6 @@
 import string
 import matplotlib.pyplot
+import matplotlib.backends.backend_pdf
 
 from channel_enum import ChannelYUV
 from feature_vector import FeatureVector
@@ -45,10 +46,15 @@ colors = [
   '#ffc0cb'  # 36
 ]
 
-def plot(vec: FeatureVector, feature_config: FeatureConfig, plot_name: string):
-    height = abs(vec.histograms[0][1][0] - vec.histograms[0][1][1])
+def plot(vec: FeatureVector, feature_config: FeatureConfig):
     for cnt, hist in enumerate(vec.histograms):
         matplotlib.pyplot.hist(hist[0], label=f'{feature_config.dct_coefficients[cnt]}', color=colors[cnt], density=True, stacked=True)
+
+
+def plot_single(img_path: string, feature_config: FeatureConfig, plot_name: string):
+    feature_extractor = FeatureExtractor(feature_config)
+    feat_vec = feature_extractor.extract_feature_vector(img_path)
+    plot(feat_vec, feature_config)
 
     matplotlib.pyplot.legend()
     matplotlib.pyplot.xlabel('Coeff value')
@@ -56,16 +62,43 @@ def plot(vec: FeatureVector, feature_config: FeatureConfig, plot_name: string):
     matplotlib.pyplot.show()
 
 
+outputs = [
+  'heic',
+  'jp2',
+  'jpg',
+  'jxl',
+  'jxr',
+  'webp'
+]
+
+def plot_outputs(feature_config: FeatureConfig, metric: string, img_name: string):
+    for output in outputs:
+        matplotlib.pyplot.figure()
+        img_path = f"images/output/{metric}/{output}/{img_name}.{output}.png"
+        feature_extractor = FeatureExtractor(feature_config)
+        feat_vec = feature_extractor.extract_feature_vector(img_path)
+        plot(feat_vec, feature_config)
+        matplotlib.pyplot.legend()
+        matplotlib.pyplot.xlabel(output)
+
+
+    pdf = matplotlib.backends.backend_pdf.PdfPages(f"plots/{img_name}.pdf")
+    for fig in range(1, matplotlib.pyplot.figure().number): ## will open an empty extra figure :(
+        pdf.savefig( fig )
+    pdf.close()
+
+
 if __name__ == '__main__':
     coeffs = []
     block_size = 6
     for i in range(0, block_size):
-      for j in range(0, block_size):
-        coeffs.append((i,j))
+        for j in range(0, block_size):
+            coeffs.append((i,j))
 
     feature_config = FeatureConfig(color_channel=ChannelYUV.V, block_size=block_size, bin_width=0.1, dct_coefficients=coeffs[1:])
-    feature_extractor = FeatureExtractor(feature_config)
+    
     img_path = "images/output/psnr_30/webp/Buildings.0004.webp.png"
-    feat_vec = feature_extractor.extract_feature_vector(img_path)
-    plot(feat_vec, feature_config, "psnr_30_webp_Buildings.0004")
+    # plot_single(img_path, feature_config, "psnr_30_webp_Buildings.0004")
+    plot_outputs(feature_config, "psnr_30", "Fabric.0004")
+
 
