@@ -3,8 +3,6 @@ import cProfile
 from multiprocessing import Pool
 from itertools import repeat
 
-from numpy import block
-
 from classification import run_classification
 from channel_enum import ChannelYUV
 from config_generator import generate_configs
@@ -44,7 +42,7 @@ def _store_results(config: FeatureConfig, result: float, file: str):
 
 
 def main():
-    base_path = "images/output/psnr_32.0"
+    base_path = "images/output/psnr_33.5"
     paths = [
         os.path.join(base_path, "heic"),
         os.path.join(base_path, "jp2"),
@@ -54,12 +52,12 @@ def main():
         os.path.join(base_path, "webp")
 
     ]
-    run_experiment(paths, "experiment_results_psnr32.csv")
+    run_experiment(paths, "experiment_results_psnr33_5.csv")
 
     config = FeatureConfig(color_channel=ChannelYUV.V, block_size=6, bin_width=0.1, dct_coefficients=[
         (0,5),(1,1),(1,3),(1,5),(4,5),(5,0)
     ])
-    run_specific_experiment(paths, "experiment_results_psnr32_single.csv", config)
+    run_specific_experiment(paths, "experiment_results_psnr33_5_single.csv", config)
 
 
 if __name__ == '__main__':
