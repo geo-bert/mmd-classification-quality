@@ -73,16 +73,17 @@ outputs = [
 
 def plot_outputs(feature_config: FeatureConfig, metric: string, img_name: string):
     for output in outputs:
-        matplotlib.pyplot.figure()
+        matplotlib.pyplot.figure(figsize=(10,10))
         img_path = f"images/output/{metric}/{output}/{img_name}.{output}.png"
         feature_extractor = FeatureExtractor(feature_config)
         feat_vec = feature_extractor.extract_feature_vector(img_path)
         plot(feat_vec, feature_config)
         matplotlib.pyplot.legend()
-        matplotlib.pyplot.xlabel(output)
+        matplotlib.pyplot.xlabel(f"{output}: DCT coefficient values")
+        matplotlib.pyplot.ylabel("Rel. distribution")
 
 
-    pdf = matplotlib.backends.backend_pdf.PdfPages(f"plots/{img_name}.pdf")
+    pdf = matplotlib.backends.backend_pdf.PdfPages(f"plots/{metric}_{img_name}.pdf")
     for fig in range(1, matplotlib.pyplot.figure().number): ## will open an empty extra figure :(
         pdf.savefig( fig )
     pdf.close()
@@ -95,10 +96,10 @@ if __name__ == '__main__':
         for j in range(0, block_size):
             coeffs.append((i,j))
 
-    feature_config = FeatureConfig(color_channel=ChannelYUV.V, block_size=block_size, bin_width=0.1, dct_coefficients=coeffs[1:])
+    feature_config = FeatureConfig(color_channel=ChannelYUV.V, block_size=8, bin_width=0.1, dct_coefficients=coeffs[1:])
     
-    img_path = "images/output/psnr_30/webp/Buildings.0004.webp.png"
+    img_path = "images/output/psnr_32/webp/Buildings.0004.webp.png"
     # plot_single(img_path, feature_config, "psnr_30_webp_Buildings.0004")
-    plot_outputs(feature_config, "psnr_30", "Fabric.0004")
+    plot_outputs(feature_config, "psnr_32.0", "Buildings.0008")
 
 
