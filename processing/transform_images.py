@@ -53,9 +53,11 @@ def main(args):
             out_path = os.path.join(outpath, name)
             try:
                 if compression != "niqe":
-                    bs.search(in_img, target, fn, METRICS[compression], out_path, compression != "niqe")
+                    bs.search(in_img, target, fn, METRICS[compression], out_path)
                 else:
                     bs.search_niqe(in_img, target, fn, METRICS[compression], out_path)
+            except KeyboardInterrupt:
+                exit(1)
             except matlab.engine.MatlabExecutionError:
                 problematic.add(in_img)
                 print(f"Could not convert {in_img}")
