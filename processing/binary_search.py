@@ -47,23 +47,25 @@ def search_niqe(img_in, target, fn_compress, fn_quality, out):
         img = fn_compress(img_in, out, x)
         return fn_quality(img, img_in)
 
-    stepRange = range(50, 100)
-    q = calc_new_quality(50)
-    currBest = (q, 50)
+    metric = calc_new_quality(50)
+    quality_flag = 50
 
-    # change range depening on first halfing
-    if q < target:
-        stepRange = range(0, 50)
+    # change range depending on first halving
+    step_range = range(0, 50) if metric < target else range(50, 101)
 
-    for x in reversed(stepRange):
+    for s in step_range:
         print(".", end="", flush=True)
-        q = calc_new_quality(x)
+        q = calc_new_quality(s)
+
         # check if best yet seen quality differs more than current quality
         # and niqe has to be approached from top so best estimate must be >= target
-        if (abs(currBest[0] - target)) > (abs(q - target)) and q >= target:
-            currBest = (q, x)
+        # also improve estimate if metric is smaller than target
+        if abs(metric - target) > abs(q - target) and (q >= target or metric < target):
+            metric = q
+            quality_flag = s
 
-    print(f"\n{img_in.split(os.sep)[-1]} -> {out.split(os.sep)[-1]}: Metric={currBest[0]} Quality={currBest[1]}")
-    fn_compress(img_in, out, currBest[1])
+    print()
+    print(f"{img_in.split(os.sep)[-1]} -> {out.split(os.sep)[-1]}: Metric={metric} Quality={quality_flag}")
+    fn_compress(img_in, out, quality_flag)
 
-    return currBest[1]
+    return quality_flag
