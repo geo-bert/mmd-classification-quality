@@ -9,7 +9,7 @@ from config_generator import generate_configs
 from feature_config import FeatureConfig
 from setup import get_feature_vectors
 
-KNN_K = 1
+KNN_K = 3
 
 
 def run_experiment(paths: list[str], result_file: str):
