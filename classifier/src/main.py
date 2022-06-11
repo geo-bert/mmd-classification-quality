@@ -9,7 +9,7 @@ from config_generator import generate_configs
 from feature_config import FeatureConfig
 from setup import get_feature_vectors
 
-KNN_K = 1
+KNN_K = 10
 
 
 def run_experiment(paths: list[str], result_file: str):
@@ -52,12 +52,12 @@ def main():
         os.path.join(base_path, "webp")
 
     ]
-    run_experiment(paths, "experiments/experiment_results_mssim_avg_0_99.csv")
+    run_experiment(paths, "experiments/experiment_results_mssim_avg_0_99_K10.csv")
 
     config = FeatureConfig(color_channel=ChannelYUV.V, block_size=6, bin_width=0.1, dct_coefficients=[
         (0,5),(1,1),(1,3),(1,5),(4,5),(5,0)
     ])
-    run_specific_experiment(paths, "experiments/experiment_results_mssim_avg_0_99_single.csv", config)
+    run_specific_experiment(paths, "experiments/experiment_results_mssim_avg_0_99_single_K10.csv", config)
 
 
 if __name__ == '__main__':
