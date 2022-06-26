@@ -42,7 +42,7 @@ def _store_results(config: FeatureConfig, result: float, file: str):
 
 
 def main():
-    base_path = "images/output_new/mssim_avg_0.99"
+    base_path = "images/output_new/psnr_35.0"
     paths = [
         os.path.join(base_path, "heic"),
         os.path.join(base_path, "jp2"),
@@ -52,12 +52,12 @@ def main():
         os.path.join(base_path, "webp")
 
     ]
-    run_experiment(paths, "experiments/experiment_results_mssim_avg_0_99.csv")
+    run_experiment(paths, "experiments/experiment_results_psnr_35.csv")
 
     config = FeatureConfig(color_channel=ChannelYUV.V, block_size=6, bin_width=0.1, dct_coefficients=[
         (0,5),(1,1),(1,3),(1,5),(4,5),(5,0)
     ])
-    run_specific_experiment(paths, "experiments/experiment_results_mssim_avg_0_99_single.csv", config)
+    run_specific_experiment(paths, "experiments/experiment_results_psnr_35_single.csv", config)
 
 
 if __name__ == '__main__':
